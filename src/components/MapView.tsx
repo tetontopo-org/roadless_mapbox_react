@@ -19,6 +19,12 @@ import { buildPopupHTML } from "../utils/popup";
 import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
 
+import Logos from "./Logos";
+
+// import images as modules (Vite returns URL strings)
+import ttLogo from "../assets/logos/tetontopo_logo.png";
+import partnerLogo from "../assets/logos/SC-Oregon-Chapter-Logo_Horizontal_White.png";
+
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
 export default function MapView() {
@@ -214,12 +220,24 @@ export default function MapView() {
     };
   }, [ready, map]);
 
-  return (
-    <div className="map-root">
-      <div id="map" />
-      <div ref={noteRef} className="note">
-        {note}
-      </div>
+return (
+  <div className="map-root">
+    <div id="map" />
+
+    {/* Logos overlay goes here */}
+    <Logos
+      position="bottom-center"
+      gap={20}
+      items={[
+        { src: ttLogo, alt: "TetonTopo" },
+        { src: partnerLogo, alt: "Partner", href: "https://example.com", height: 34 },
+      ]}
+    />
+
+    {/* Existing note overlay */}
+    <div ref={noteRef} className="note">
+      {note}
     </div>
-  );
+  </div>
+);
 }
