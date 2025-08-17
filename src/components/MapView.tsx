@@ -229,8 +229,8 @@ return (
       position="bottom-center"
       gap={20}
       items={[
-        { src: ttLogo, alt: "TetonTopo" },
-        { src: partnerLogo, alt: "Partner", href: "https://example.com", height: 34, card: true },
+        { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com"},
+        { src: partnerLogo, alt: "Sierra Club Oregon Chapter", href: "https://www.sierraclub.org/oregon", height: 34, card: true },
       ]}
     />
 
