@@ -1,6 +1,6 @@
-import React, { Suspense } from "react";
-const MapView = React.lazy(() => import("./components/MapView"));
+import MapView from "./components/MapView";
+import "./styles.css";
 
 export default function App() {
-  return <Suspense fallback={<div style={{padding:16}}>Loading map…</div>}><MapView /></Suspense>;
+  return <MapView />;
 }

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
-import area from "@turf/area";
+import * as turf from "@turf/turf";
 import { useMapbox } from "../hooks/useMapbox";
 import {
   MAPBOX_STYLE_URL,
@@ -174,7 +174,7 @@ export default function MapView() {
           properties: {},
           geometry: f.geometry,
         } as any;
-        const m2 = area(gj);
+        const m2 = (turf.area as any)(gj);
         const acres = m2 / 4046.8564224;
         if (Number.isFinite(acres)) {
           acresTxt = acres.toLocaleString("en-US", {
