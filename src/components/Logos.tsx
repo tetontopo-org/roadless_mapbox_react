@@ -1,18 +1,17 @@
 import React from "react";
 
 type LogoItem = {
-  src: string;
-  alt: string;
-  href?: string;
-  height?: number;
-  card?: boolean;
+  src: string;        // imported image module (URL string)
+  alt: string;        // accessible alt text
+  href?: string;      // optional link
+  height?: number;    // px height for this logo (defaults to 40)
 };
 
 type Props = {
   items: LogoItem[];
   position?: "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center";
-  gap?: number;
-  className?: string;
+  gap?: number;       // px spacing between logos (defaults to 12)
+  className?: string; // extra classes if needed
 };
 
 export default function Logos({
@@ -21,76 +20,32 @@ export default function Logos({
   gap = 12,
   className = "",
 }: Props) {
-  const style: React.CSSProperties = {
-    position: "absolute",
-    zIndex: 3,
-    display: "flex",
-    alignItems: "center",
-    gap,
-    pointerEvents: "none",
-  };
-
-  // reset all edges first to avoid leftovers
-  Object.assign(style, { top: "auto", right: "auto", bottom: "auto", left: "auto", transform: "none" });
-
-  switch (position) {
-    case "top-left":
-      Object.assign(style, { top: 12, left: 12 });
-      break;
-    case "top-right":
-      Object.assign(style, { top: 12, right: 12 });
-      break;
-    case "bottom-left":
-      Object.assign(style, { bottom: 12, left: 12 });
-      break;
-    case "bottom-right":
-      Object.assign(style, { bottom: 12, right: 12 });
-      break;
-    case "bottom-center":
-      Object.assign(style, { bottom: 12, left: "50%", transform: "translateX(-50%)" });
-      break;
-  }
+  // container classes for corner positioning
+  const posClass =
+    position === "top-left" ? "logos--tl" :
+    position === "top-right" ? "logos--tr" :
+    position === "bottom-left" ? "logos--bl" : "logos--br";
+    position === "bottom-center" ? "logos--bc" : "logos--br";
 
   return (
-    <div className={`logos ${className}`} style={style}>
+    <div className={`logos ${posClass} ${className}`} style={{ gap }}>
       {items.map((it, i) => {
-  const img = (
-    <img
-      key={i}
-      src={it.src}
-      alt={it.alt}
-      style={{
-        height: (it.height ?? 40) + "px",
-        width: "auto",
-        objectFit: "contain",
-        pointerEvents: "auto",
-      }}
-    />
-  );
-
-  const content = it.href ? (
-    <a
-      key={i}
-      href={it.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{ pointerEvents: "auto" }}
-    >
-      {img}
-    </a>
-  ) : (
-    img
-  );
-
-  return it.card ? (
-    <div key={i} className="logo-card">
-      {content}
-    </div>
-  ) : (
-    content
-  );
-})}
-
+        const img = (
+          <img
+            key={i}
+            src={it.src}
+            alt={it.alt}
+            style={{ height: (it.height ?? 40) + "px", width: "auto", objectFit: "contain" }}
+          />
+        );
+        return it.href ? (
+          <a key={i} href={it.href} target="_blank" rel="noopener noreferrer" className="logo-link">
+            {img}
+          </a>
+        ) : (
+          img
+        );
+      })}
     </div>
   );
 }

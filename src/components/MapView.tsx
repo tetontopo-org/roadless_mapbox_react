@@ -23,7 +23,7 @@ import Logos from "./Logos";
 
 // import images as modules (Vite returns URL strings)
 import ttLogo from "../assets/logos/tetontopo_logo.png";
-import partnerLogo from "../assets/logos/SC-Oregon-Chapter-Logo_Horizontal_Color.png";
+import partnerLogo from "../assets/logos/SC-Oregon-Chapter-Logo_Horizontal_White.png";
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 
@@ -230,7 +230,7 @@ return (
       gap={20}
       items={[
         { src: ttLogo, alt: "TetonTopo" },
-        { src: partnerLogo, alt: "Partner", href: "https://example.com", height: 34, card: true },
+        { src: partnerLogo, alt: "Partner", href: "https://example.com", height: 34 },
       ]}
     />
 
