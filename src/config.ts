@@ -3,10 +3,10 @@ export const MAPBOX_STYLE_URL = 'mapbox://styles/mapbox/outdoors-v12';
 // Subtle customizations to tone down the bright greens in outdoors basemap
 export const CUSTOM_STYLE_OVERRIDES = {
   // Just tone down the intense greens to be more neutral
- 'natural': '#a8bfa8',   // Muted sage green
-'landuse': '#c3d6c3',   // Soft gray-green
-'park':    '#9fb89f',   // Gentle mid-tone green
-'forest':  '#8aa08a'    // Subdued olive green
+ 'natural': '#e6eae4',   // Very light gray-green (natural areas, hills)
+'landuse': '#d9e3d4',   // Pale muted green for general landuse
+'park':    '#c8d7b8',   // Soft olive green, matches Google Maps parks
+'forest':  '#b5cfa5'    // Slightly deeper muted green for forest
 };
 
 // Tilesets + source-layer names
