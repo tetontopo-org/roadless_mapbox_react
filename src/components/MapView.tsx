@@ -240,7 +240,7 @@ export default function MapView() {
         ]}
       />
 
-      {/* Existing note overlay */}
+      {/* Map Title */}
       <div ref={noteRef} className="map-title">
         Roadless Area Map
       </div>
