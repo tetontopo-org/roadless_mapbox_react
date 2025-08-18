@@ -3,24 +3,24 @@ export const MAPBOX_STYLE_URL = 'mapbox://styles/mapbox/outdoors-v12';
 // Custom style overrides for Mapbox outdoors style
 export const CUSTOM_STYLE_OVERRIDES = {
   // Land and terrain colors
-  'land': '#f5f5dc',           // Beige for land
-  'landuse': '#d2b48c',        // Tan for urban areas
-  'natural': '#90ee90',        // Light green for natural areas (parks, forests)
+  'land': '#faf0e6',           // Linen for land
+  'landuse': '#cd853f',        // Peru for urban areas
+  'natural': '#daa520',        // Goldenrod for natural areas (parks, forests)
   
   // Water colors
-  'water': '#87ceeb',          // Sky blue for water bodies
-  'waterway': '#4682b4',       // Steel blue for rivers and streams
+  'water': '#4682b4',          // Steel blue for water bodies
+  'waterway': '#2d5aa0',       // Deeper steel blue for rivers and streams
   
   // Road colors
-  'road': '#f0f8ff',           // Alice blue for major roads
-  'road-secondary': '#e6e6fa', // Lavender for secondary roads
+  'road': '#fff8dc',           // Cornsilk for major roads
+  'road-secondary': '#f5deb3', // Wheat for secondary roads
   
   // Building colors
-  'building': '#d2b48c',       // Tan for building outlines
+  'building': '#cd853f',       // Peru for building outlines
   
   // Text colors
-  'text': '#2f4f2f',           // Dark forest green for text
-  'text-halo': '#f5f5dc'       // Beige for text halo/outline
+  'text': '#8b4513',           // Saddle brown for text
+  'text-halo': '#faf0e6'       // Linen for text halo/outline
 };
 
 // Alternative color schemes you can use
