@@ -1,65 +1,13 @@
 export const MAPBOX_STYLE_URL = 'mapbox://styles/mapbox/outdoors-v12';
 
-// Custom style overrides for Mapbox outdoors style
+// Subtle customizations to tone down the bright greens in outdoors basemap
 export const CUSTOM_STYLE_OVERRIDES = {
-  // Land and terrain colors
-  'land': '#faf0e6',           // Linen for land
-  'landuse': '#cd853f',        // Peru for urban areas
-  'natural': '#daa520',        // Goldenrod for natural areas (parks, forests)
-  
-  // Water colors
-  'water': '#4682b4',          // Steel blue for water bodies
-  'waterway': '#2d5aa0',       // Deeper steel blue for rivers and streams
-  
-  // Road colors
-  'road': '#fff8dc',           // Cornsilk for major roads
-  'road-secondary': '#f5deb3', // Wheat for secondary roads
-  
-  // Building colors
-  'building': '#cd853f',       // Peru for building outlines
-  
-  // Text colors
-  'text': '#8b4513',           // Saddle brown for text
-  'text-halo': '#faf0e6'       // Linen for text halo/outline
+  // Just tone down the intense greens to be more neutral
+  'natural': '#8fbc8f',        // Dark sea green - more neutral than bright green
+  'landuse': '#a0d8a0',        // Light green - softer than bright green
+  'park': '#90c090',           // Medium green - neutralized
+  'forest': '#7cb87c'          // Forest green - less intense
 };
-
-// Alternative color schemes you can use
-export const COLOR_SCHEMES = {
-  // Earthy/natural theme
-  earth: {
-    land: '#f5f5dc',           // Beige
-    water: '#87ceeb',          // Sky blue
-    road: '#f0f8ff',           // Alice blue
-    natural: '#90ee90',        // Light green
-    building: '#d2b48c'        // Tan
-  },
-  
-  // High contrast theme
-  highContrast: {
-    land: '#ffffff',            // White
-    water: '#000080',           // Navy
-    road: '#000000',            // Black
-    natural: '#228b22',         // Forest green
-    building: '#696969'         // Dim gray
-  },
-  
-  // Warm theme
-  warm: {
-    land: '#faf0e6',            // Linen
-    water: '#4682b4',           // Steel blue
-    road: '#fff8dc',            // Cornsilk
-    natural: '#daa520',         // Goldenrod
-    building: '#cd853f'         // Peru
-  }
-};
-
-// Function to get custom colors with optional scheme
-export function getCustomColors(scheme?: keyof typeof COLOR_SCHEMES) {
-  if (!scheme) {
-    return CUSTOM_STYLE_OVERRIDES;
-  }
-  return COLOR_SCHEMES[scheme];
-}
 
 // Tilesets + source-layer names
 export const ROADLESS_TILESET_ID   = 'tetontopo.34pdvs6z';

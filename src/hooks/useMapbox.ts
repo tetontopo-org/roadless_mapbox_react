@@ -51,40 +51,17 @@ function applyCustomStyleColors(map: mapboxgl.Map) {
       style.layers.forEach(layer => {
         const layerId = layer.id;
         
-        // Apply colors based on layer type and content
-        switch (layer.type) {
-          case 'background':
-            map.setPaintProperty(layerId, 'background-color', colors.land);
-            break;
-            
-          case 'fill':
-            if (layerId.includes('water') || layerId.includes('ocean')) {
-              map.setPaintProperty(layerId, 'fill-color', colors.water);
-            } else if (layerId.includes('landuse') || layerId.includes('natural')) {
-              map.setPaintProperty(layerId, 'fill-color', colors.natural);
-            }
-            break;
-            
-          case 'line':
-            if (layerId.includes('water') || layerId.includes('waterway')) {
-              map.setPaintProperty(layerId, 'line-color', colors.waterway);
-            } else if (layerId.includes('road')) {
-              const isSecondary = layerId.includes('secondary') || layerId.includes('tertiary');
-              map.setPaintProperty(layerId, 'line-color', isSecondary ? colors['road-secondary'] : colors.road);
-            } else if (layerId.includes('building')) {
-              map.setPaintProperty(layerId, 'line-color', colors.building);
-            }
-            break;
-            
-          case 'symbol':
-            map.setPaintProperty(layerId, 'text-color', colors.text);
-            map.setPaintProperty(layerId, 'text-halo-color', colors['text-halo']);
-            break;
+        // Only tone down the bright greens, keep everything else as-is
+        if (layer.type === 'fill') {
+          if (layerId.includes('natural') || layerId.includes('landuse') || 
+              layerId.includes('park') || layerId.includes('forest')) {
+            map.setPaintProperty(layerId, 'fill-color', colors.natural);
+          }
         }
       });
     }
     
-    console.log('Custom style colors applied successfully');
+    console.log('Green colors toned down successfully');
   } catch (error) {
     console.warn('Error applying custom style colors:', error);
   }
