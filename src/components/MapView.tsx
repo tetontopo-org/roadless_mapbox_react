@@ -220,24 +220,30 @@ export default function MapView() {
     };
   }, [ready, map]);
 
-return (
-  <div className="map-root">
-    <div id="map" />
+  return (
+    <div className="map-root">
+      <div id="map" />
 
-    {/* Logos overlay goes here */}
-    <Logos
-      position="bottom-center"
-      gap={20}
-      items={[
-        { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com"},
-        { src: partnerLogo, alt: "Sierra Club Oregon Chapter", href: "https://www.sierraclub.org/oregon", height: 34, card: true },
-      ]}
-    />
+      {/* Logos overlay goes here */}
+      <Logos
+        position="bottom-center"
+        gap={20}
+        items={[
+          { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com" },
+          {
+            src: partnerLogo,
+            alt: "Sierra Club Oregon Chapter",
+            href: "https://www.sierraclub.org/oregon",
+            height: 34,
+            card: true,
+          },
+        ]}
+      />
 
-    {/* Existing note overlay */}
-    <div ref={noteRef} className="note">
-      {note}
+      {/* Existing note overlay */}
+      <div ref={noteRef} className="map-title">
+        Roadless Area Map
+      </div>
     </div>
-  </div>
-);
+  );
 }
