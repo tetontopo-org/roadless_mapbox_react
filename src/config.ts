@@ -3,10 +3,10 @@ export const MAPBOX_STYLE_URL = 'mapbox://styles/mapbox/outdoors-v12';
 // Subtle customizations to tone down the bright greens in outdoors basemap
 export const CUSTOM_STYLE_OVERRIDES = {
   // Just tone down the intense greens to be more neutral
-  'natural': '#8fbc8f',        // Dark sea green - more neutral than bright green
-  'landuse': '#a0d8a0',        // Light green - softer than bright green
-  'park': '#90c090',           // Medium green - neutralized
-  'forest': '#7cb87c'          // Forest green - less intense
+ 'natural': '#a8bfa8',   // Muted sage green
+'landuse': '#c3d6c3',   // Soft gray-green
+'park':    '#9fb89f',   // Gentle mid-tone green
+'forest':  '#8aa08a'    // Subdued olive green
 };
 
 // Tilesets + source-layer names
