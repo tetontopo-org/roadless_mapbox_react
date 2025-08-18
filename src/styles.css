@@ -11,23 +11,40 @@ body {
 
 .map-root {
   position: relative;
-  height: 100%;
+  height: 100vh;
 }
 #map {
   position: absolute;
   inset: 0;
+  z-index: 0;
 }
 
+/* Map Title Styling */
 .map-title {
   position: absolute;
-  top: 10px;
-  left: 10px;
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #222; /* adjust for visibility */
-  background: rgba(255, 255, 255, 0.8);
-  padding: 6px 12px;
-  border-radius: 4px;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: inline-flex;
+  width: max-content;
+}
+.map-title__text {
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #111827;
+  pointer-events: none;
+}
+.map-title__sub {
+  margin-top: 2px;
+  font-size: 0.85rem;
+  color: #4b5563;
+  pointer-events: none;
 }
 
 .survey-btn {
@@ -75,7 +92,7 @@ body {
   display: inline-block;
 }
 
-/* Logo overlay container */
+/* Logos */
 .logos {
   position: absolute;
   z-index: 3; /* above map and controls */
@@ -83,6 +100,8 @@ body {
   align-items: center;
   /* don't block map interactions except on the logos themselves */
   pointer-events: none;
+  display: inline-flex; /* was flex; inline keeps width to content */
+  width: max-content;
 }
 .logo-link,
 .logos img {
@@ -110,6 +129,8 @@ body {
   left: 50%;
   bottom: 12px;
   transform: translateX(-50%); /* centers horizontally */
+  right: auto;
+  top: auto;
 }
 
 /* Optional: subtle card bg behind logos (toggle by adding `logos--card` class) */
@@ -121,13 +142,6 @@ body {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Small screens: reduce logo size a bit */
-@media (max-width: 500px) {
-  .logos img {
-    height: 32px !important;
-  }
-}
-
 .logo-card {
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid #e5e7eb;
@@ -137,4 +151,22 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+/* Media handling for smaller screens*/
+@media (max-width: 520px) {
+  /* Map Title smaller */
+  .map-title {
+    padding: 6px 10px;
+  }
+  .map-title__text {
+    font-size: 1rem;
+  }
+  .map-title__sub {
+    font-size: 0.8rem;
+  }
+
+  /* Logos smaller */
+  .logos img {
+    height: 32px !important;
+  }
 }

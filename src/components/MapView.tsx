@@ -19,6 +19,8 @@ import { buildPopupHTML } from "../utils/popup";
 import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
 
+import MapTitle from "./MapTitle";
+
 import Logos from "./Logos";
 
 // import images as modules (Vite returns URL strings)
@@ -213,6 +215,7 @@ export default function MapView() {
       }
     })();
 
+    // Cleanup
     return () => {
       m.off("mouseenter", "roadless-fill", onEnter);
       m.off("mouseleave", "roadless-fill", onLeave);
@@ -222,9 +225,13 @@ export default function MapView() {
 
   return (
     <div className="map-root">
+      {/* Map container */}
       <div id="map" />
 
-      {/* Logos overlay goes here */}
+      {/* Map Title (top-left) */}
+      <MapTitle title="Roadless Areas in Oregon" />
+
+      {/* Logos overlay (bottom-center) */}
       <Logos
         position="bottom-center"
         gap={20}
@@ -240,10 +247,7 @@ export default function MapView() {
         ]}
       />
 
-      {/* Map Title */}
-      <div ref={noteRef} className="map-title">
-        Roadless Area Map
-      </div>
+      {/* Note block removed from JSX; setNote logic is kept in code */}
     </div>
   );
 }
