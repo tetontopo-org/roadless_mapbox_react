@@ -6,8 +6,6 @@ import {
   MAPBOX_STYLE_URL,
   ROADLESS_TILESET_ID,
   ROADLESS_SOURCE_LAYER,
-  PCT_TILESET_ID,
-  PCT_SOURCE_LAYER,
   OVERLAY_COLOR,
   FILL_OPACITY,
   PCT_COLOR,
@@ -41,6 +39,21 @@ export default function MapView() {
     m.addControl(new LegendControl(), "bottom-right");
   }, [ready, map]);
 
+  async function getGeoJSONBounds(
+    url: string
+  ): Promise<[number, number, number, number] | null> {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) return null;
+      const gj = await res.json();
+      // Compute bbox via Turf
+      const b = (turf.bbox as any)(gj) as [number, number, number, number];
+      return b;
+    } catch {
+      return null;
+    }
+  }
+
   // Add sources/layers + behavior
   useEffect(() => {
     if (!ready || !map) return;
@@ -55,10 +68,11 @@ export default function MapView() {
         url: `mapbox://${ROADLESS_TILESET_ID}`,
       });
     }
-    if (!m.getSource("pct-src")) {
-      m.addSource("pct-src", {
-        type: "vector",
-        url: `mapbox://${PCT_TILESET_ID}`,
+    if (!m.getSource("pct")) {
+      m.addSource("pct", {
+        type: "geojson",
+        data: "/data/pct_or_simplified.geojson", // from earlier step
+        generateId: true,
       });
     }
 
@@ -101,19 +115,13 @@ export default function MapView() {
       );
     }
 
-    // PCT line
+    // PCT line (from local GeoJSON)
     if (!m.getLayer("pct-line")) {
       m.addLayer(
         {
           id: "pct-line",
           type: "line",
-          source: "pct-src",
-          "source-layer": PCT_SOURCE_LAYER,
-          filter: [
-            "any",
-            ["==", ["geometry-type"], "LineString"],
-            ["==", ["geometry-type"], "MultiLineString"],
-          ],
+          source: "pct",
           layout: { "line-cap": "round", "line-join": "round" },
           paint: {
             "line-color": PCT_COLOR,
@@ -147,6 +155,56 @@ export default function MapView() {
         firstSymbol
       );
     }
+
+    // // Create one fixed label for the entire Oregon PCT
+    // (async () => {
+    //   const gj: any = await fetch("/data/pct_or_simplified.geojson").then((r) =>
+    //     r.json()
+    //   );
+
+    //   // Find the geometric center of the whole trail
+    //   const center = (turf.center(gj) as any).geometry.coordinates;
+
+    //   const labelFC: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
+    //     type: "FeatureCollection",
+    //     features: [
+    //       {
+    //         type: "Feature",
+    //         geometry: { type: "Point", coordinates: center },
+    //         properties: {
+    //           Label: "Pacific Crest Trail – Oregon",
+    //         },
+    //       },
+    //     ],
+    //   };
+
+    //   if (!m.getSource("pct-label-src")) {
+    //     m.addSource("pct-label-src", { type: "geojson", data: labelFC });
+    //   } else {
+    //     (m.getSource("pct-label-src") as mapboxgl.GeoJSONSource).setData(
+    //       labelFC
+    //     );
+    //   }
+
+    //   if (m.getLayer("pct-label")) m.removeLayer("pct-label");
+    //   m.addLayer({
+    //     id: "pct-label",
+    //     type: "symbol",
+    //     source: "pct-label-src",
+    //     layout: {
+    //       "text-field": ["get", "Label"],
+    //       "text-size": 18,
+    //       "text-allow-overlap": true, // ensure it's always visible
+    //       "text-ignore-placement": true, // ignore collisions with other labels
+    //       "text-font": ["Arial Unicode MS Regular"],
+    //     },
+    //     paint: {
+    //       "text-color": "#0b1f44",
+    //       "text-halo-color": "#ffffff",
+    //       "text-halo-width": 2,
+    //     },
+    //   });
+    // })();
 
     // Popups on roadless polygons
     const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true });
@@ -198,15 +256,28 @@ export default function MapView() {
     // Fit to union of bounds
     (async () => {
       const token = (mapboxgl as any).accessToken as string;
-      const [rMeta, pMeta] = await Promise.all([
+
+      const [rMeta, pctBounds] = await Promise.all([
         getTileJSONBounds(ROADLESS_TILESET_ID, token),
-        getTileJSONBounds(PCT_TILESET_ID, token),
+        getGeoJSONBounds("/data/pct_simplified.geojson"), // local PCT
       ]);
-      const ub = unionBounds(rMeta.bounds, pMeta.bounds);
+
+      // rMeta.bounds is [minX, minY, maxX, maxY]
+      const rBounds = rMeta?.bounds as
+        | [number, number, number, number]
+        | undefined;
+
+      let ub: [number, number, number, number] | null = null;
+      if (rBounds && pctBounds) {
+        ub = unionBounds(rBounds, pctBounds);
+      } else {
+        ub = rBounds ?? pctBounds ?? null;
+      }
+
       if (ub) {
-        fitBounds(m, ub); // <- use m
+        fitBounds(m, ub);
         setNote("View fit to union of Roadless + PCT bounds.");
-      } else if (rMeta.center && rMeta.center.length >= 2) {
+      } else if (rMeta?.center && rMeta.center.length >= 2) {
         m.setCenter([rMeta.center[0], rMeta.center[1]]);
         if (rMeta.center.length >= 3) m.setZoom(rMeta.center[2]);
         setNote("Centered using Roadless center metadata.");
@@ -220,27 +291,31 @@ export default function MapView() {
     };
   }, [ready, map]);
 
-return (
-  <div className="map-root">
-    <div id="map" />
-    {/*Map title overlay*/}
-    <MapTitle
-      title="Oregon Roadless Areas"
+  return (
+    <div className="map-root">
+      <div id="map" />
+      {/*Map title overlay*/}
+      <MapTitle title="Oregon Roadless Areas" />
+      {/* Logos overlay goes here */}
+      <Logos
+        position="bottom-center"
+        gap={20}
+        items={[
+          { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com" },
+          {
+            src: partnerLogo,
+            alt: "Sierra Club Oregon Chapter",
+            href: "https://www.sierraclub.org/oregon",
+            height: 34,
+            card: true,
+          },
+        ]}
       />
-    {/* Logos overlay goes here */}
-    <Logos
-      position="bottom-center"
-      gap={20}
-      items={[
-        { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com"},
-        { src: partnerLogo, alt: "Sierra Club Oregon Chapter", href: "https://www.sierraclub.org/oregon", height: 34, card: true },
-      ]}
-    />
 
-    {/* Existing note overlay */}
-    <div ref={noteRef} className="note">
-      {note}
+      {/* Existing note overlay */}
+      <div ref={noteRef} className="note">
+        {note}
+      </div>
     </div>
-  </div>
-);
+  );
 }
