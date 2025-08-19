@@ -223,7 +223,10 @@ export default function MapView() {
 return (
   <div className="map-root">
     <div id="map" />
-
+    {/*Map title overlay*/}
+    <MapTitle
+      title="Oregon Roadless Areas"
+      />
     {/* Logos overlay goes here */}
     <Logos
       position="bottom-center"
