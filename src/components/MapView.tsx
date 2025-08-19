@@ -62,12 +62,16 @@ export default function MapView() {
     setNote("Basemap loaded. Adding sources + layers…");
 
     // Add sources
+
+    //roadless source
     if (!m.getSource("roadless-src")) {
       m.addSource("roadless-src", {
         type: "vector",
         url: `mapbox://${ROADLESS_TILESET_ID}`,
       });
     }
+
+    //pct source (local)
     if (!m.getSource("pct")) {
       m.addSource("pct", {
         type: "geojson",
@@ -76,7 +80,50 @@ export default function MapView() {
       });
     }
 
-    // Place below first symbol layer
+    // Trails source (local)
+    if (!map.getSource("oregon-trails")) {
+      map.addSource("oregon-trails", {
+        type: "geojson",
+        // If you placed your file under public/data/, this path will work at runtime
+        data: "/data/Oregon_trails_simplified.geojson",
+        // promoteId lets us reference a stable id in events/filters
+        promoteId: "OBJECTID_1",
+      });
+    }
+
+    // --- Trails line layer ---
+    if (!map.getLayer("oregon-trails-line")) {
+      map.addLayer(
+        {
+          id: "oregon-trails-line",
+          type: "line",
+          source: "oregon-trails",
+          layout: {
+            "line-cap": "round",
+            "line-join": "round",
+            // show only at appropriate zooms if you like:
+            // "visibility": "visible"
+          },
+          paint: {
+            "line-color": "#0A7CFF",
+            "line-width": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              6,
+              0.3,
+              10,
+              1.2,
+              14,
+              3,
+            ],
+            "line-opacity": 0.9,
+          },
+        } /* optionally insert before an existing layer id */
+      );
+    }
+
+    //first symbol
     const firstSymbol = m
       .getStyle()
       .layers?.find((l) => l.type === "symbol")?.id;
