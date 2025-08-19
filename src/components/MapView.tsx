@@ -22,8 +22,6 @@ import { SurveyControl } from "./controls/SurveyControl";
 import MapTitle from "./MapTitle";
 
 import Logos from "./Logos";
-
-// import images as modules (Vite returns URL strings)
 import ttLogo from "../assets/logos/tetontopo_logo.png";
 import partnerLogo from "../assets/logos/SC-Oregon-Chapter-Logo_Horizontal_Color.png";
 
@@ -215,7 +213,6 @@ export default function MapView() {
       }
     })();
 
-    // Cleanup
     return () => {
       m.off("mouseenter", "roadless-fill", onEnter);
       m.off("mouseleave", "roadless-fill", onLeave);
@@ -223,31 +220,24 @@ export default function MapView() {
     };
   }, [ready, map]);
 
-  return (
-    <div className="map-root">
-      {/* Map container */}
-      <div id="map" />
+return (
+  <div className="map-root">
+    <div id="map" />
 
-      {/* Map Title (top-left) */}
-      <MapTitle title="Roadless Areas in Oregon" />
+    {/* Logos overlay goes here */}
+    <Logos
+      position="bottom-center"
+      gap={20}
+      items={[
+        { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com"},
+        { src: partnerLogo, alt: "Sierra Club Oregon Chapter", href: "https://www.sierraclub.org/oregon", height: 34, card: true },
+      ]}
+    />
 
-      {/* Logos overlay (bottom-center) */}
-      <Logos
-        position="bottom-center"
-        gap={20}
-        items={[
-          { src: ttLogo, alt: "TetonTopo", href: "https://tetontopo.com" },
-          {
-            src: partnerLogo,
-            alt: "Sierra Club Oregon Chapter",
-            href: "https://www.sierraclub.org/oregon",
-            height: 34,
-            card: true,
-          },
-        ]}
-      />
-
-      {/* Note block removed from JSX; setNote logic is kept in code */}
+    {/* Existing note overlay */}
+    <div ref={noteRef} className="note">
+      {note}
     </div>
-  );
+  </div>
+);
 }
