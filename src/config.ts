@@ -16,7 +16,7 @@ export const ROADLESS_SOURCE_LAYER = "Roadless_areas-23lokp";
 // Styling
 export const OVERLAY_COLOR = "#EB9200 ";
 export const FILL_OPACITY = 0.55;
-export const PCT_COLOR = "#0b5d1e";
+export const PCT_COLOR = "#003B4A"; // original color: #0b5d1e
 export const OREGON_TRAILS_COLOR = "#008294";
 
 // Field guesses for popup
