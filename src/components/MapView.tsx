@@ -294,11 +294,92 @@ export default function MapView() {
         .addTo(m); // <- use m
     }
 
+    // PCT and Oregon Trails click functionality
+    function onTrailClick(e: mapboxgl.MapLayerMouseEvent) {
+      const f = e.features && e.features[0];
+      if (!f) return;
+      const props = (f.properties || {}) as Record<string, any>;
+
+      // Determine which trail layer was clicked by checking the source
+      const sourceId = f.source;
+      let trailName = "Unknown Trail";
+      let trailInfo = "";
+
+      if (sourceId === "pct") {
+        trailName = "Pacific Crest Trail - Oregon";
+        trailInfo =
+          "A long-distance hiking trail spanning the length of Oregon";
+      } else if (sourceId === "oregon-trails") {
+        // Try to get trail name from properties
+        trailName =
+          props.TRAIL_NAME || props.NAME || props.TRAIL || "Oregon Trail";
+        trailInfo = props.DESCRIPTION || "A trail in Oregon";
+
+        // Check if this is a PCT segment
+        if (props.TRAIL_NAME && props.TRAIL_NAME.includes("PACIFIC CREST")) {
+          trailName = "Pacific Crest Trail - Oregon";
+          trailInfo =
+            "A long-distance hiking trail spanning the length of Oregon";
+        }
+      }
+
+      // Get trail length from properties or calculate if not available
+      let lengthTxt = "—";
+      if (sourceId === "oregon-trails" && props.GIS_MILES) {
+        // Use the pre-calculated GIS miles from the data
+        lengthTxt =
+          props.GIS_MILES.toLocaleString("en-US", {
+            maximumFractionDigits: 1,
+          }) + " miles";
+      } else if (sourceId === "pct") {
+        // For the dedicated PCT source, show the total Oregon PCT length
+        lengthTxt = "456.5 miles"; // Total Oregon PCT length
+      } else {
+        // Calculate length for other trails if GIS_MILES is not available
+        try {
+          const gj = {
+            type: "Feature",
+            properties: {},
+            geometry: f.geometry,
+          } as any;
+          const lengthMeters = (turf.length as any)(gj);
+          const lengthMiles = lengthMeters * 0.000621371; // Convert to miles
+          if (Number.isFinite(lengthMiles)) {
+            lengthTxt =
+              lengthMiles.toLocaleString("en-US", {
+                maximumFractionDigits: 1,
+              }) + " miles";
+          }
+        } catch {}
+      }
+
+      const popupHTML = `
+        <div style="padding: 8px;">
+          <h3 style="margin: 0 0 8px 0; color: #0b1f44; font-size: 16px;">${trailName}</h3>
+          <p style="margin: 0 0 4px 0; color: #666; font-size: 14px;">${trailInfo}</p>
+          <p style="margin: 0; color: #666; font-size: 12px;">Length: ${lengthTxt}</p>
+        </div>
+      `;
+
+      popup.setLngLat(e.lngLat).setHTML(popupHTML).addTo(m);
+    }
+
     m.on("mouseenter", "roadless-fill", onEnter);
     m.on("mouseleave", "roadless-fill", onLeave);
     m.on("click", "roadless-fill", onClick);
 
-    setNote("Layers added. Popups enabled with live Acres.");
+    // Add trail click functionality
+    m.on("mouseenter", "pct-line", onEnter);
+    m.on("mouseleave", "pct-line", onLeave);
+    m.on("click", "pct-line", onTrailClick);
+
+    m.on("mouseenter", "oregon-trails-line", onEnter);
+    m.on("mouseleave", "oregon-trails-line", onLeave);
+    m.on("click", "oregon-trails-line", onTrailClick);
+
+    setNote(
+      "Layers added. Popups enabled with live Acres and trail information."
+    );
 
     // Fit to union of bounds
     (async () => {
@@ -335,6 +416,12 @@ export default function MapView() {
       m.off("mouseenter", "roadless-fill", onEnter);
       m.off("mouseleave", "roadless-fill", onLeave);
       m.off("click", "roadless-fill", onClick);
+      m.off("mouseenter", "pct-line", onEnter);
+      m.off("mouseleave", "pct-line", onLeave);
+      m.off("click", "pct-line", onTrailClick);
+      m.off("mouseenter", "oregon-trails-line", onEnter);
+      m.off("mouseleave", "oregon-trails-line", onLeave);
+      m.off("click", "oregon-trails-line", onTrailClick);
     };
   }, [ready, map]);
 
