@@ -317,9 +317,9 @@ export default function MapView() {
 
         // Check if this is a PCT segment
         if (props.TRAIL_NAME && props.TRAIL_NAME.includes("PACIFIC CREST")) {
-          trailName = "Pacific Crest Trail - Oregon";
+          trailName = "Pacific Crest Trail - Oregon Section";
           trailInfo =
-            "A long-distance hiking trail spanning the length of Oregon";
+            "A long-distance hiking trail spanning from Canada to Mexico";
         }
       }
 
@@ -333,7 +333,7 @@ export default function MapView() {
           }) + " miles";
       } else if (sourceId === "pct") {
         // For the dedicated PCT source, show the total Oregon PCT length
-        lengthTxt = "456.5 miles"; // Total Oregon PCT length
+        lengthTxt = "456.5 miles (of 2,650 miles total)"; // Total Oregon PCT length
       } else {
         // Calculate length for other trails if GIS_MILES is not available
         try {
