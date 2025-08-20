@@ -1,14 +1,19 @@
-import type mapboxgl from 'mapbox-gl'
-import { OVERLAY_COLOR, FILL_OPACITY, PCT_COLOR } from '../../config'
+import type mapboxgl from "mapbox-gl";
+import {
+  OVERLAY_COLOR,
+  FILL_OPACITY,
+  PCT_COLOR,
+  OREGON_TRAILS_COLOR,
+} from "../../config";
 
 export class LegendControl implements mapboxgl.IControl {
-  private _container!: HTMLElement
+  private _container!: HTMLElement;
 
   onAdd(): HTMLElement {
-    const wrap = document.createElement('div')
-    wrap.className = 'mapboxgl-ctrl'
-    const card = document.createElement('div')
-    card.className = 'legend-card'
+    const wrap = document.createElement("div");
+    wrap.className = "mapboxgl-ctrl";
+    const card = document.createElement("div");
+    card.className = "legend-card";
     card.innerHTML = `
       <div class="legend-title">Legend</div>
       <div class="legend-item">
@@ -26,13 +31,25 @@ export class LegendControl implements mapboxgl.IControl {
           </svg>
         </span>
         <span>Roadless Area</span>
-      </div>`
-    wrap.appendChild(card)
-    this._container = wrap
-    return wrap
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" aria-hidden="true">
+          <svg width="32" height="16" viewBox="0 0 32 16" xmlns="http://www.w3.org/2000/svg">
+            <line x1="2" y1="8" x2="30" y2="8" stroke="${OREGON_TRAILS_COLOR}" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span>Oregon Trails</span>
+      </div>`;
+    wrap.appendChild(card);
+    this._container = wrap;
+    return wrap;
   }
 
-  onRemove(): void { this._container.remove() }
+  onRemove(): void {
+    this._container.remove();
+  }
 
-  getDefaultPosition() { return 'bottom-right' as const }
+  getDefaultPosition() {
+    return "bottom-right" as const;
+  }
 }

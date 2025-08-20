@@ -11,6 +11,7 @@ import {
   PCT_COLOR,
   ID_KEYS,
   NAME_KEYS,
+  OREGON_TRAILS_COLOR,
 } from "../config";
 import { getTileJSONBounds, unionBounds, fitBounds } from "../utils/bounds";
 import { buildPopupHTML } from "../utils/popup";
@@ -85,42 +86,10 @@ export default function MapView() {
       map.addSource("oregon-trails", {
         type: "geojson",
         // If you placed your file under public/data/, this path will work at runtime
-        data: "/data/Oregon_trails_simplified.geojson",
+        data: "/data/Oregon_trails.geojson",
         // promoteId lets us reference a stable id in events/filters
         promoteId: "OBJECTID_1",
       });
-    }
-
-    // --- Trails line layer ---
-    if (!map.getLayer("oregon-trails-line")) {
-      map.addLayer(
-        {
-          id: "oregon-trails-line",
-          type: "line",
-          source: "oregon-trails",
-          layout: {
-            "line-cap": "round",
-            "line-join": "round",
-            // show only at appropriate zooms if you like:
-            // "visibility": "visible"
-          },
-          paint: {
-            "line-color": "#0A7CFF",
-            "line-width": [
-              "interpolate",
-              ["linear"],
-              ["zoom"],
-              6,
-              0.3,
-              10,
-              1.2,
-              14,
-              3,
-            ],
-            "line-opacity": 0.9,
-          },
-        } /* optionally insert before an existing layer id */
-      );
     }
 
     //first symbol
@@ -140,6 +109,42 @@ export default function MapView() {
           paint: { "fill-color": OVERLAY_COLOR, "fill-opacity": FILL_OPACITY },
         },
         firstSymbol
+      );
+    }
+
+    // --- Trails line layer ---
+    if (!map.getLayer("oregon-trails-line")) {
+      map.addLayer(
+        {
+          id: "oregon-trails-line",
+          type: "line",
+          source: "oregon-trails",
+          minzoom: 10, // Show when scale is around 5 miles
+          layout: {
+            "line-cap": "round",
+            "line-join": "round",
+            // show only at appropriate zooms if you like:
+            // "visibility": "visible"
+          },
+          paint: {
+            "line-color": OREGON_TRAILS_COLOR,
+            "line-width": [
+              "interpolate",
+              ["linear"],
+              ["zoom"],
+              10,
+              0.8,
+              12,
+              1.5,
+              14,
+              2.5,
+              16,
+              4,
+            ],
+            "line-opacity": 0.9,
+          },
+        },
+        "roadless-fill" // Position above basemap but below roadless areas
       );
     }
 
