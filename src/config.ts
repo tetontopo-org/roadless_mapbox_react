@@ -1,4 +1,4 @@
-export const MAPBOX_STYLE_URL = "mapbox://styles/mapbox/outdoors-v12";
+export const MAPBOX_STYLE_URL = "mapbox://styles/mapbox/satellite-streets-v12";
 
 // Subtle customizations to tone down the bright greens in outdoors basemap
 export const CUSTOM_STYLE_OVERRIDES = {

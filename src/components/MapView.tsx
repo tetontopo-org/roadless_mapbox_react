@@ -100,7 +100,7 @@ export default function MapView() {
         
         // Create a circular flight path around Mount Hood
         const radius = 0.02; // About 1-2 miles radius
-        const duration = 30000; // 30 seconds per loop
+        const duration = 60000; // 60 seconds per loop
         
         // Start the flight animation
         function flyAroundMountHood() {
@@ -134,7 +134,7 @@ export default function MapView() {
         
         // Start the flight after a short delay
         flyAroundMountHood();
-      }, 2000); // Wait 2 seconds after map loads
+      }, 5000); // Wait 5 seconds after map loads to pause on the lodge
 
       // Add sources
 
