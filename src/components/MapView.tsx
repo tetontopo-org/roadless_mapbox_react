@@ -99,8 +99,8 @@ export default function MapView() {
         const mountHoodCenter = [-121.6999, 45.3735];
         
         // Create a circular flight path around Mount Hood
-        const radius = 0.02; // About 1-2 miles radius
-        const duration = 60000; // 60 seconds per loop
+        const radius = 0.08; // About 5-10 miles radius
+        const duration = 90000; // 90 seconds per loop
         
         // Start the flight animation
         function flyAroundMountHood() {
@@ -115,13 +115,16 @@ export default function MapView() {
             const lng = mountHoodCenter[0] + radius * Math.cos(angle);
             const lat = mountHoodCenter[1] + radius * Math.sin(angle);
             
+            // Calculate bearing to always point directly at Mount Hood
+            const bearing = (angle * 180 / Math.PI) + 180; // Point directly at the mountain
+            
             // Fly to new position, always pointing at Mount Hood
             m.flyTo({
               center: [lng, lat],
               zoom: 16,
               pitch: 60,
-              bearing: (angle * 180 / Math.PI) + 90, // Point towards the mountain
-              duration: 1000, // Smooth transition
+              bearing: bearing,
+              duration: 2000, // Longer, smoother transition
               essential: true
             });
             
