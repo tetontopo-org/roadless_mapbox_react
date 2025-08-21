@@ -2,14 +2,21 @@ import { useEffect, useRef, useState } from 'react'
 import mapboxgl from 'mapbox-gl'
 import { CUSTOM_STYLE_OVERRIDES } from '../config'
 
-export function useMapbox(containerId: string, style: string, center = [-120.5, 44.0] as [number, number], zoom = 5) {
+export function useMapbox(containerId: string, style: string, center = [-121.711, 45.331] as [number, number], zoom = 16) {
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
     if (mapRef.current) return
 
-    mapRef.current = new mapboxgl.Map({ container: containerId, style, center, zoom })
+    mapRef.current = new mapboxgl.Map({ 
+      container: containerId, 
+      style, 
+      center, 
+      zoom,
+      pitch: 60,
+      bearing: 0
+    })
 
     mapRef.current.addControl(new mapboxgl.NavigationControl(), 'top-right')
     mapRef.current.addControl(new mapboxgl.ScaleControl({ maxWidth: 150, unit: 'imperial' }))

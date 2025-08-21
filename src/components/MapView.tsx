@@ -55,14 +55,45 @@ export default function MapView() {
     }
   }
 
-  // Add sources/layers + behavior
-  useEffect(() => {
-    if (!ready || !map) return;
+      // Add sources/layers + behavior
+    useEffect(() => {
+      if (!ready || !map) return;
 
-    const m = map as mapboxgl.Map; // <- capture non-null ONCE for this effect
-    setNote("Basemap loaded. Adding sources + layers…");
+      const m = map as mapboxgl.Map; // <- capture non-null ONCE for this effect
+      setNote("Basemap loaded. Adding sources + layers…");
 
-    // Add sources
+      // Add 3D terrain
+      if (!m.getSource("mapbox-terrain")) {
+        m.addSource("mapbox-terrain", {
+          type: "raster-dem",
+          url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+          tileSize: 512,
+          maxzoom: 14
+        });
+      }
+
+      // Add terrain layer with exaggeration
+      if (!m.getLayer("terrain")) {
+        m.addLayer({
+          id: "terrain",
+          type: "hillshade",
+          source: "mapbox-terrain",
+          layout: {},
+          paint: {
+            "hillshade-shadow-color": "#000000",
+            "hillshade-highlight-color": "#FFFFFF",
+            "hillshade-accent-color": "#000000"
+          }
+        });
+      }
+
+      // Set terrain with 3D exaggeration
+      m.setTerrain({
+        source: "mapbox-terrain",
+        exaggeration: 2.5
+      });
+
+      // Add sources
 
     //roadless source
     if (!m.getSource("roadless-src")) {
@@ -386,36 +417,39 @@ export default function MapView() {
       "Layers added. Popups enabled with live Acres and trail information."
     );
 
+    // Commented out automatic bounds fitting to keep focus on Timberline Lodge
     // Fit to union of bounds
-    (async () => {
-      const token = (mapboxgl as any).accessToken as string;
+    // (async () => {
+    //   const token = (mapboxgl as any).accessToken as string;
 
-      const [rMeta, pctBounds] = await Promise.all([
-        getTileJSONBounds(ROADLESS_TILESET_ID, token),
-        getGeoJSONBounds("/data/pct_simplified.geojson"), // local PCT
-      ]);
+    //   const [rMeta, pctBounds] = await Promise.all([
+    //     getTileJSONBounds(ROADLESS_TILESET_ID, token),
+    //     getGeoJSONBounds("/data/pct_simplified.geojson"), // local PCT
+    //   ]);
 
-      // rMeta.bounds is [minX, minY, maxX, maxY]
-      const rBounds = rMeta?.bounds as
-        | [number, number, number, number]
-        | undefined;
+    //   // rMeta.bounds is [minX, minY, maxX, maxY]
+    //   const rBounds = rMeta?.bounds as
+    //     | [number, number, number, number]
+    //   | undefined;
 
-      let ub: [number, number, number, number] | null = null;
-      if (rBounds && pctBounds) {
-        ub = unionBounds(rBounds, pctBounds);
-      } else {
-        ub = rBounds ?? pctBounds ?? null;
-      }
+    //   let ub: [number, number, number, number] | null = null;
+    //   if (rBounds && pctBounds) {
+    //     ub = unionBounds(rBounds, pctBounds);
+    //   } else {
+    //     ub = rBounds ?? pctBounds ?? null;
+    //   }
 
-      if (ub) {
-        fitBounds(m, ub);
-        setNote("View fit to union of Roadless + PCT bounds.");
-      } else if (rMeta?.center && rMeta.center.length >= 2) {
-        m.setCenter([rMeta.center[0], rMeta.center[1]]);
-        if (rMeta.center.length >= 3) m.setZoom(rMeta.center[2]);
-        setNote("Centered using Roadless center metadata.");
-      }
-    })();
+    //   if (ub) {
+    //     fitBounds(m, ub);
+    //     setNote("View fit to union of Roadless + PCT bounds.");
+    //   } else if (rMeta?.center && rMeta.center.length >= 2) {
+    //     m.setCenter([rMeta.center[0], rMeta.center[1]]);
+    //     if (rMeta.center.length >= 3) m.setZoom(rMeta.center[2]);
+    //     setNote("Centered using Roadless center metadata.");
+    //   }
+    // })();
+
+    setNote("Map centered on Timberline Lodge with 3D terrain enabled.");
 
     return () => {
       m.off("mouseenter", "roadless-fill", onEnter);
