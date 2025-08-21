@@ -13,7 +13,7 @@ import {
   NAME_KEYS,
   OREGON_TRAILS_COLOR,
 } from "../config";
-import { getTileJSONBounds, unionBounds, fitBounds } from "../utils/bounds";
+// Removed late fitBounds/easeTo imports to prevent post-load camera jump
 import { buildPopupHTML } from "../utils/popup";
 import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
@@ -63,6 +63,7 @@ export default function MapView() {
     setNote("Basemap loaded. Adding sources + layers…");
 
     // Add sources
+    // Note: Layers will be added above the 3D terrain that was set up in useMapbox
 
     //roadless source
     if (!m.getSource("roadless-src")) {
@@ -106,7 +107,12 @@ export default function MapView() {
           source: "roadless-src",
           "source-layer": ROADLESS_SOURCE_LAYER,
           filter: ["==", ["geometry-type"], "Polygon"],
-          paint: { "fill-color": OVERLAY_COLOR, "fill-opacity": FILL_OPACITY },
+          paint: {
+            "fill-color": OVERLAY_COLOR,
+            "fill-opacity": FILL_OPACITY,
+            "fill-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "fill-translate-anchor": "map",
+          },
         },
         firstSymbol
       );
@@ -142,6 +148,8 @@ export default function MapView() {
               4,
             ],
             "line-opacity": 0.9,
+            "line-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "line-translate-anchor": "map",
           },
         },
         "roadless-fill" // Position above basemap but below roadless areas
@@ -161,7 +169,12 @@ export default function MapView() {
             ["==", ["geometry-type"], "LineString"],
             ["==", ["geometry-type"], "Polygon"],
           ],
-          paint: { "line-color": OVERLAY_COLOR, "line-width": 1.5 },
+          paint: {
+            "line-color": OVERLAY_COLOR,
+            "line-width": 1.5,
+            "line-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "line-translate-anchor": "map",
+          },
         },
         firstSymbol
       );
@@ -202,6 +215,8 @@ export default function MapView() {
               16,
               ["literal", [4, 2]],
             ],
+            "line-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "line-translate-anchor": "map",
           },
         },
         firstSymbol
@@ -386,36 +401,7 @@ export default function MapView() {
       "Layers added. Popups enabled with live Acres and trail information."
     );
 
-    // Fit to union of bounds
-    (async () => {
-      const token = (mapboxgl as any).accessToken as string;
-
-      const [rMeta, pctBounds] = await Promise.all([
-        getTileJSONBounds(ROADLESS_TILESET_ID, token),
-        getGeoJSONBounds("/data/pct_simplified.geojson"), // local PCT
-      ]);
-
-      // rMeta.bounds is [minX, minY, maxX, maxY]
-      const rBounds = rMeta?.bounds as
-        | [number, number, number, number]
-        | undefined;
-
-      let ub: [number, number, number, number] | null = null;
-      if (rBounds && pctBounds) {
-        ub = unionBounds(rBounds, pctBounds);
-      } else {
-        ub = rBounds ?? pctBounds ?? null;
-      }
-
-      if (ub) {
-        fitBounds(m, ub);
-        setNote("View fit to union of Roadless + PCT bounds.");
-      } else if (rMeta?.center && rMeta.center.length >= 2) {
-        m.setCenter([rMeta.center[0], rMeta.center[1]]);
-        if (rMeta.center.length >= 3) m.setZoom(rMeta.center[2]);
-        setNote("Centered using Roadless center metadata.");
-      }
-    })();
+    // Removed delayed fit-to-bounds and easeTo to avoid post-load zoom jump
 
     return () => {
       m.off("mouseenter", "roadless-fill", onEnter);
