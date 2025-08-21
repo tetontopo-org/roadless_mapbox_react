@@ -125,7 +125,7 @@ export default function MapView() {
           id: "oregon-trails-line",
           type: "line",
           source: "oregon-trails",
-          minzoom: 10, // Show when scale is around 5 miles
+          minzoom: 8, // Show when scale is around 10 miles
           layout: {
             "line-cap": "round",
             "line-join": "round",
