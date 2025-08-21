@@ -90,8 +90,51 @@ export default function MapView() {
       // Set terrain with 3D exaggeration
       m.setTerrain({
         source: "mapbox-terrain",
-        exaggeration: 2.5
+        exaggeration: 1
       });
+
+      // Start automatic flight path around Mount Hood
+      setTimeout(() => {
+        // Mount Hood coordinates (approximately the peak)
+        const mountHoodCenter = [-121.6999, 45.3735];
+        
+        // Create a circular flight path around Mount Hood
+        const radius = 0.02; // About 1-2 miles radius
+        const duration = 30000; // 30 seconds per loop
+        
+        // Start the flight animation
+        function flyAroundMountHood() {
+          const startTime = Date.now();
+          
+          function animate() {
+            const elapsed = Date.now() - startTime;
+            const progress = (elapsed % duration) / duration;
+            const angle = progress * 2 * Math.PI; // Full 360 degrees
+            
+            // Calculate position on the circle
+            const lng = mountHoodCenter[0] + radius * Math.cos(angle);
+            const lat = mountHoodCenter[1] + radius * Math.sin(angle);
+            
+            // Fly to new position, always pointing at Mount Hood
+            m.flyTo({
+              center: [lng, lat],
+              zoom: 16,
+              pitch: 60,
+              bearing: (angle * 180 / Math.PI) + 90, // Point towards the mountain
+              duration: 1000, // Smooth transition
+              essential: true
+            });
+            
+            // Continue the animation
+            requestAnimationFrame(animate);
+          }
+          
+          animate();
+        }
+        
+        // Start the flight after a short delay
+        flyAroundMountHood();
+      }, 2000); // Wait 2 seconds after map loads
 
       // Add sources
 
