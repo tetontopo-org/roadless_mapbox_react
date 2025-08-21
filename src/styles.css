@@ -47,23 +47,80 @@ body {
   pointer-events: none;
 }
 
+.survey-control {
+  position: absolute;
+  bottom: 155px;
+  right: 12px;
+  z-index: 3;
+  pointer-events: none;
+}
+
 .survey-btn {
   background: #df2700;
   color: #fff;
   text-decoration: none;
   border: none;
   cursor: pointer;
-  font: 600 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+  font: 600 17px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     sans-serif;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   display: block;
-  margin-top: 8px;
   text-align: center;
+  transition: all 0.2s ease;
+  min-width: 170px;
+  pointer-events: auto;
 }
 .survey-btn:hover {
-  opacity: 0.92;
+  background: #c42400;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+/* Pitch Control Button */
+.pitch-btn {
+  background: #fff;
+  color: #404040;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font: 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    sans-serif;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.pitch-btn:hover {
+  background: #f8f9fa;
+  border-color: #999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.pitch-btn:active {
+  background: #e9ecef;
+  transform: translateY(1px);
+}
+
+.pitch-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pitch-btn--3d {
+  background: #393b3c;
+  color: #fff;
+  border-color: #393b3c;
+}
+
+.pitch-btn--3d:hover {
+  background: #393b3c;
+  border-color: #393b3c;
 }
 
 .legend-card {
@@ -168,5 +225,12 @@ body {
   /* Logos smaller */
   .logos img {
     height: 32px !important;
+  }
+
+  /* Pitch control smaller on mobile */
+  .pitch-btn {
+    width: 32px;
+    height: 32px;
+    padding: 6px;
   }
 }

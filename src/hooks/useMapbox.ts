@@ -23,6 +23,7 @@ export function useMapbox(
       bearing: 0,
     });
 
+    mapRef.current.addControl(new mapboxgl.FullscreenControl(), "top-right");
     mapRef.current.addControl(
       new mapboxgl.NavigationControl({
         showCompass: true,
@@ -34,7 +35,6 @@ export function useMapbox(
     mapRef.current.addControl(
       new mapboxgl.ScaleControl({ maxWidth: 150, unit: "imperial" })
     );
-    mapRef.current.addControl(new mapboxgl.FullscreenControl(), "top-right");
 
     function onLoad() {
       setReady(true);

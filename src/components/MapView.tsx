@@ -17,6 +17,7 @@ import {
 import { buildPopupHTML } from "../utils/popup";
 import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
+import { PitchControl } from "./controls/PitchControl";
 
 import MapTitle from "./MapTitle";
 
@@ -36,7 +37,8 @@ export default function MapView() {
   useEffect(() => {
     if (!ready || !map) return;
     const m = map as mapboxgl.Map; // <- capture non-null
-    m.addControl(new SurveyControl(), "top-right");
+    m.addControl(new PitchControl(), "top-right");
+    m.addControl(new SurveyControl(), "bottom-right");
     m.addControl(new LegendControl(), "bottom-right");
   }, [ready, map]);
 

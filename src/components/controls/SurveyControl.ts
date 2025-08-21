@@ -5,7 +5,7 @@ export class SurveyControl implements mapboxgl.IControl {
 
   onAdd(): HTMLElement {
     const container = document.createElement("div");
-    container.className = "mapboxgl-ctrl";
+    container.className = "survey-control";
     const a = document.createElement("a");
     a.className = "survey-btn";
     a.href = "https://act.sierraclub.org/actions/National?actionId=AR0569577";
@@ -22,6 +22,6 @@ export class SurveyControl implements mapboxgl.IControl {
   }
 
   getDefaultPosition() {
-    return "top-right" as const;
+    return "bottom-right" as const;
   }
 }
