@@ -20,6 +20,7 @@ import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
 import { PitchControl } from "./controls/PitchControl";
 import { SourcesControl } from "./controls/SourcesControl";
+import { SearchControl } from "./controls/SearchControl";
 
 import MapTitle from "./MapTitle";
 
@@ -706,6 +707,9 @@ export default function MapView() {
       <div id="map" />
       {/*Map title overlay*/}
       <MapTitle title="Oregon Roadless Areas" />
+
+      {/* Search Control */}
+      <SearchControl position="top-left" map={map} />
 
       {/* Sources Control */}
       <SourcesControl position="bottom-left" />
