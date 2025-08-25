@@ -18,6 +18,7 @@ import { buildPopupHTML } from "../utils/popup";
 import { LegendControl } from "./controls/LegendControl";
 import { SurveyControl } from "./controls/SurveyControl";
 import { PitchControl } from "./controls/PitchControl";
+import { SourcesControl } from "./controls/SourcesControl";
 
 import MapTitle from "./MapTitle";
 
@@ -225,56 +226,6 @@ export default function MapView() {
       );
     }
 
-    // // Create one fixed label for the entire Oregon PCT
-    // (async () => {
-    //   const gj: any = await fetch("/data/pct_or_simplified.geojson").then((r) =>
-    //     r.json()
-    //   );
-
-    //   // Find the geometric center of the whole trail
-    //   const center = (turf.center(gj) as any).geometry.coordinates;
-
-    //   const labelFC: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
-    //     type: "FeatureCollection",
-    //     features: [
-    //       {
-    //         type: "Feature",
-    //         geometry: { type: "Point", coordinates: center },
-    //         properties: {
-    //           Label: "Pacific Crest Trail – Oregon",
-    //         },
-    //       },
-    //     ],
-    //   };
-
-    //   if (!m.getSource("pct-label-src")) {
-    //     m.addSource("pct-label-src", { type: "geojson", data: labelFC });
-    //   } else {
-    //     (m.getSource("pct-label-src") as mapboxgl.GeoJSONSource).setData(
-    //       labelFC
-    //     );
-    //   }
-
-    //   if (m.getLayer("pct-label")) m.removeLayer("pct-label");
-    //   m.addLayer({
-    //     id: "pct-label",
-    //     type: "symbol",
-    //     source: "pct-label-src",
-    //     layout: {
-    //       "text-field": ["get", "Label"],
-    //       "text-size": 18,
-    //       "text-allow-overlap": true, // ensure it's always visible
-    //       "text-ignore-placement": true, // ignore collisions with other labels
-    //       "text-font": ["Arial Unicode MS Regular"],
-    //     },
-    //     paint: {
-    //       "text-color": "#0b1f44",
-    //       "text-halo-color": "#ffffff",
-    //       "text-halo-width": 2,
-    //     },
-    //   });
-    // })();
-
     // Popups on roadless polygons
     const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true });
 
@@ -423,6 +374,10 @@ export default function MapView() {
       <div id="map" />
       {/*Map title overlay*/}
       <MapTitle title="Oregon Roadless Areas" />
+
+      {/* Sources Control */}
+      <SourcesControl position="bottom-left" />
+
       {/* Logos overlay goes here */}
       <Logos
         position="bottom-center"

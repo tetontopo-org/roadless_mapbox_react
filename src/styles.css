@@ -123,6 +123,188 @@ body {
   border-color: #393b3c;
 }
 
+/* Sources Control Container */
+.sources-control {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.sources-control--top-left {
+  top: 12px;
+  left: 12px;
+}
+
+.sources-control--top-right {
+  top: 11px;
+  right: 60px;
+}
+
+.sources-control--bottom-left {
+  bottom: 65px;
+  left: 11px;
+}
+
+.sources-control--bottom-right {
+  bottom: 12px;
+  right: 12px;
+}
+
+/* Sources Control Button */
+.sources-btn {
+  background: #fff;
+  color: #404040;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font: 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    sans-serif;
+  padding: 8px 12px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 70px;
+  height: 36px;
+  transition: all 0.2s ease;
+  position: relative;
+  pointer-events: auto;
+}
+
+.sources-btn:hover {
+  background: #f8f9fa;
+  border-color: #999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sources-btn:active {
+  background: #e9ecef;
+  transform: translateY(1px);
+}
+
+.sources-btn--active {
+  background: #393b3c;
+  color: #fff;
+  border-color: #393b3c;
+}
+
+.sources-btn--active:hover {
+  background: #393b3c;
+  border-color: #393b3c;
+}
+
+/* Sources Popup */
+.sources-popup {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 450px;
+  max-width: 550px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+/* Bottom-left popup positioning */
+.sources-control--bottom-left .sources-popup {
+  top: auto;
+  bottom: 100%;
+  right: auto;
+  left: 0;
+  margin-top: 0;
+  margin-bottom: 8px;
+  transform: translateY(10px);
+}
+
+.sources-control--bottom-left .sources-popup--open {
+  transform: translateY(0);
+}
+
+.sources-popup--open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.sources-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.sources-popup-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.sources-popup-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sources-popup-close:hover {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.sources-popup-content {
+  padding: 16px;
+  font: 14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    sans-serif;
+  color: #374151;
+}
+
+.sources-popup-content p {
+  margin: 0 0 12px 0;
+}
+
+.sources-popup-content p:last-child {
+  margin-bottom: 0;
+}
+
+.sources-popup-content ul {
+  margin: 12px 0;
+  padding-left: 20px;
+}
+
+.sources-popup-content li {
+  margin: 8px 0;
+}
+
+.sources-popup-content a {
+  color: #2563eb;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sources-popup-content a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
 .legend-card {
   background: rgba(255, 255, 255, 0.95);
   border: 1px solid #e5e7eb;
@@ -232,5 +414,19 @@ body {
     width: 32px;
     height: 32px;
     padding: 6px;
+  }
+
+  /* Sources control smaller on mobile */
+  .sources-btn {
+    min-width: 60px;
+    height: 32px;
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  /* Sources popup smaller on mobile */
+  .sources-popup {
+    min-width: 350px;
+    max-width: 400px;
   }
 }
