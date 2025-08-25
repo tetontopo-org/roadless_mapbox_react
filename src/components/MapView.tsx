@@ -12,6 +12,7 @@ import {
   ID_KEYS,
   NAME_KEYS,
   OREGON_TRAILS_COLOR,
+  CONGRESSIONAL_DISTRICTS_COLOR,
 } from "../config";
 // Removed late fitBounds/easeTo imports to prevent post-load camera jump
 import { buildPopupHTML } from "../utils/popup";
@@ -31,6 +32,9 @@ mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_TOKEN as string;
 export default function MapView() {
   const [note, setNote] = useState("Loading…");
   const noteRef = useRef<HTMLDivElement | null>(null);
+  const [selectedDistrictId, setSelectedDistrictId] = useState<string | null>(
+    null
+  );
 
   const { map, ready } = useMapbox("map", MAPBOX_STYLE_URL);
 
@@ -93,6 +97,15 @@ export default function MapView() {
         data: "/data/Oregon_trails.geojson",
         // promoteId lets us reference a stable id in events/filters
         promoteId: "OBJECTID_1",
+      });
+    }
+
+    // Congressional Districts source (local)
+    if (!map.getSource("congressional-districts")) {
+      map.addSource("congressional-districts", {
+        type: "geojson",
+        data: "/data/OR_Congressional_Districts.geojson",
+        generateId: true,
       });
     }
 
@@ -226,8 +239,52 @@ export default function MapView() {
       );
     }
 
+    // Congressional Districts layer (only visible at far zooms, no fill)
+    if (!m.getLayer("congressional-districts-line")) {
+      m.addLayer(
+        {
+          id: "congressional-districts-line",
+          type: "line",
+          source: "congressional-districts",
+          layout: { "line-cap": "round", "line-join": "round" },
+          paint: {
+            "line-color": CONGRESSIONAL_DISTRICTS_COLOR,
+            "line-opacity": 0.8,
+            "line-width": 1.5,
+            "line-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "line-translate-anchor": "map",
+          },
+        }
+        // Removed 'before' parameter to place this layer at the top of the stack
+      );
+    }
+
+    // Congressional Districts fill layer (shading at lower zooms)
+    if (!m.getLayer("congressional-districts-fill")) {
+      m.addLayer(
+        {
+          id: "congressional-districts-fill",
+          type: "fill",
+          source: "congressional-districts",
+          maxzoom: 8, // Shading disappears at zoom level 6 and above
+          paint: {
+            "fill-color": CONGRESSIONAL_DISTRICTS_COLOR,
+            "fill-opacity": 0.1, // Very light shading when not selected
+            "fill-translate": [0, 0], // Ensure proper positioning on 3D terrain
+            "fill-translate-anchor": "map",
+          },
+        },
+        "congressional-districts-line" // Position below the line layer
+      );
+    }
+
     // Popups on roadless polygons
     const popup = new mapboxgl.Popup({ closeButton: true, closeOnClick: true });
+
+    // Clear district selection when popup is closed
+    popup.on("close", () => {
+      setSelectedDistrictId(null);
+    });
 
     function onEnter() {
       m.getCanvas().style.cursor = "pointer";
@@ -350,6 +407,111 @@ export default function MapView() {
     m.on("mouseleave", "oregon-trails-line", onLeave);
     m.on("click", "oregon-trails-line", onTrailClick);
 
+    // Add congressional district click functionality
+    m.on("mouseenter", "congressional-districts-line", onEnter);
+    m.on("mouseleave", "congressional-districts-line", onLeave);
+    m.on("mouseenter", "congressional-districts-fill", onEnter);
+    m.on("mouseleave", "congressional-districts-fill", onLeave);
+
+    // Add a general click handler for layer precedence
+    const generalClickHandler = (e: mapboxgl.MapMouseEvent) => {
+      const features = m.queryRenderedFeatures(e.point);
+
+      // Define layer priority (higher index = higher priority)
+      const layerPriority = [
+        "congressional-districts-fill", // Lowest priority - clickable area
+        "congressional-districts-line", // District boundaries
+        "roadless-fill",
+        "oregon-trails-line",
+        "pct-line",
+      ];
+
+      // Find the highest priority feature
+      let highestPriorityFeature = null;
+      let highestPriorityIndex = -1;
+
+      for (const feature of features) {
+        const layerId = feature.layer?.id;
+        if (layerId) {
+          const priorityIndex = layerPriority.indexOf(layerId);
+          if (priorityIndex > highestPriorityIndex) {
+            highestPriorityIndex = priorityIndex;
+            highestPriorityFeature = feature;
+          }
+        }
+      }
+
+      // If congressional districts (fill or line) is the highest priority, handle it
+      if (
+        highestPriorityFeature &&
+        (highestPriorityFeature.layer?.id === "congressional-districts-line" ||
+          highestPriorityFeature.layer?.id === "congressional-districts-fill")
+      ) {
+        const props = (highestPriorityFeature.properties || {}) as Record<
+          string,
+          any
+        >;
+
+        // Set the selected district ID for visual feedback
+        const featureId = highestPriorityFeature.id?.toString() || null;
+        const selectedDistrictNumber = props.DISTRICT || null;
+        console.log("Selected district ID:", featureId);
+        console.log("District number:", selectedDistrictNumber);
+        console.log("Feature:", highestPriorityFeature);
+        // Use district number instead of feature ID for more reliable comparison
+        setSelectedDistrictId(selectedDistrictNumber);
+
+        const representativeNameRaw =
+          props.LISTING_NA || "Unknown Representative";
+        const districtNumber = props.DISTRICT || "Unknown";
+        const party = props.Party || "Unknown";
+        const totalAcres = props.Acres
+          ? props.Acres.toLocaleString("en-US")
+          : "—";
+        const roadlessAcres = props.SUM_RoadlessAreasAcres
+          ? props.SUM_RoadlessAreasAcres.toLocaleString("en-US", {
+              maximumFractionDigits: 0,
+            })
+          : "—";
+
+        // Parse "Last, First" format and convert to "First Last"
+        let formattedRepresentativeName = "Unknown Representative";
+        if (representativeNameRaw !== "Unknown Representative") {
+          const nameParts = representativeNameRaw.split(", ");
+          if (nameParts.length === 2) {
+            const lastName = nameParts[0];
+            const firstName = nameParts[1];
+            formattedRepresentativeName = `${firstName} ${lastName}`;
+          } else {
+            formattedRepresentativeName = representativeNameRaw;
+          }
+        }
+
+        // Format the representative name as "Rep. First Last (Party–OR-##)"
+        const formattedName = `Rep. ${formattedRepresentativeName} (${party}–OR-${districtNumber.padStart(
+          2,
+          "0"
+        )})`;
+
+        const popupHTML = `
+          <div style="padding: 8px;">
+            <h3 style="margin: 0 0 8px 0; color: #0b1f44; font-size: 16px;">Congressional District ${districtNumber}</h3>
+            <p style="margin: 0 0 4px 0; color: #666; font-size: 14px;"><strong>Representative:</strong></p>
+            <p style="margin: 0 0 4px 0; color: #666; font-size: 14px;">${formattedName}</p>
+            <p style="margin: 0 0 4px 0; color: #666; font-size: 12px;"><strong>Total Area:</strong> ${totalAcres} acres</p>
+            <p style="margin: 0; color: #666; font-size: 12px;"><strong>Roadless Areas:</strong> ${roadlessAcres} acres</p>
+          </div>
+        `;
+
+        popup.setLngLat(e.lngLat).setHTML(popupHTML).addTo(m);
+      } else {
+        // Clear selection when clicking elsewhere
+        setSelectedDistrictId(null);
+      }
+    };
+
+    m.on("click", generalClickHandler);
+
     setNote(
       "Layers added. Popups enabled with live Acres and trail information."
     );
@@ -366,8 +528,178 @@ export default function MapView() {
       m.off("mouseenter", "oregon-trails-line", onEnter);
       m.off("mouseleave", "oregon-trails-line", onLeave);
       m.off("click", "oregon-trails-line", onTrailClick);
+      m.off("mouseenter", "congressional-districts-line", onEnter);
+      m.off("mouseleave", "congressional-districts-line", onLeave);
+      m.off("mouseenter", "congressional-districts-fill", onEnter);
+      m.off("mouseleave", "congressional-districts-fill", onLeave);
+      m.off("click", generalClickHandler); // Remove general click handler
     };
   }, [ready, map]);
+
+  // Update map layers when selected district changes
+  useEffect(() => {
+    if (!ready || !map) return;
+
+    const m = map as mapboxgl.Map;
+    const currentZoom = m.getZoom();
+
+    console.log(
+      "Updating styling - selectedDistrictId:",
+      selectedDistrictId,
+      "zoom:",
+      currentZoom
+    );
+
+    // Only apply visual feedback when fill layer is visible (zoom <= 8)
+    if (currentZoom <= 8) {
+      // Update the congressional districts fill layer
+      if (m.getLayer("congressional-districts-fill")) {
+        if (selectedDistrictId) {
+          console.log(
+            "Setting fill opacity with selectedDistrictId:",
+            selectedDistrictId
+          );
+          m.setPaintProperty("congressional-districts-fill", "fill-opacity", [
+            "case",
+            ["==", ["get", "DISTRICT"], selectedDistrictId],
+            0.4, // Darker when selected
+            0.1, // Very light shading when not selected
+          ]);
+        } else {
+          // Reset to default when no selection
+          console.log("Resetting fill opacity to default");
+          m.setPaintProperty(
+            "congressional-districts-fill",
+            "fill-opacity",
+            0.1
+          );
+        }
+      }
+
+      // Update the congressional districts line layer
+      if (m.getLayer("congressional-districts-line")) {
+        if (selectedDistrictId) {
+          m.setPaintProperty("congressional-districts-line", "line-opacity", [
+            "case",
+            ["==", ["get", "DISTRICT"], selectedDistrictId],
+            1.0, // Fully opaque when selected
+            0.8, // Normal opacity when not selected
+          ]);
+
+          m.setPaintProperty("congressional-districts-line", "line-width", [
+            "case",
+            ["==", ["get", "DISTRICT"], selectedDistrictId],
+            2.5, // Thicker when selected
+            1.5, // Normal width when not selected
+          ]);
+        } else {
+          // Reset to default when no selection
+          m.setPaintProperty(
+            "congressional-districts-line",
+            "line-opacity",
+            0.8
+          );
+          m.setPaintProperty("congressional-districts-line", "line-width", 1.5);
+        }
+      }
+    } else {
+      // When zoom > 8, reset to default styling
+      if (m.getLayer("congressional-districts-fill")) {
+        m.setPaintProperty("congressional-districts-fill", "fill-opacity", 0.1);
+      }
+      if (m.getLayer("congressional-districts-line")) {
+        m.setPaintProperty("congressional-districts-line", "line-opacity", 0.8);
+        m.setPaintProperty("congressional-districts-line", "line-width", 1.5);
+      }
+    }
+  }, [selectedDistrictId, ready, map]);
+
+  // Add zoom change listener to update styling when zoom changes
+  useEffect(() => {
+    if (!ready || !map) return;
+
+    const m = map as mapboxgl.Map;
+
+    const handleZoomChange = () => {
+      const currentZoom = m.getZoom();
+
+      // Only apply visual feedback when fill layer is visible (zoom <= 8)
+      if (currentZoom <= 8) {
+        if (selectedDistrictId) {
+          // Update the congressional districts fill layer
+          if (m.getLayer("congressional-districts-fill")) {
+            m.setPaintProperty("congressional-districts-fill", "fill-opacity", [
+              "case",
+              ["==", ["get", "DISTRICT"], selectedDistrictId],
+              0.4, // Darker when selected
+              0.1, // Very light shading when not selected
+            ]);
+          }
+
+          // Update the congressional districts line layer
+          if (m.getLayer("congressional-districts-line")) {
+            m.setPaintProperty("congressional-districts-line", "line-opacity", [
+              "case",
+              ["==", ["get", "DISTRICT"], selectedDistrictId],
+              1.0, // Fully opaque when selected
+              0.8, // Normal opacity when not selected
+            ]);
+
+            m.setPaintProperty("congressional-districts-line", "line-width", [
+              "case",
+              ["==", ["get", "DISTRICT"], selectedDistrictId],
+              2.5, // Thicker when selected
+              1.5, // Normal width when not selected
+            ]);
+          }
+        } else {
+          // Reset to default when no selection
+          if (m.getLayer("congressional-districts-fill")) {
+            m.setPaintProperty(
+              "congressional-districts-fill",
+              "fill-opacity",
+              0.1
+            );
+          }
+          if (m.getLayer("congressional-districts-line")) {
+            m.setPaintProperty(
+              "congressional-districts-line",
+              "line-opacity",
+              0.8
+            );
+            m.setPaintProperty(
+              "congressional-districts-line",
+              "line-width",
+              1.5
+            );
+          }
+        }
+      } else {
+        // When zoom > 8, reset to default styling
+        if (m.getLayer("congressional-districts-fill")) {
+          m.setPaintProperty(
+            "congressional-districts-fill",
+            "fill-opacity",
+            0.1
+          );
+        }
+        if (m.getLayer("congressional-districts-line")) {
+          m.setPaintProperty(
+            "congressional-districts-line",
+            "line-opacity",
+            0.8
+          );
+          m.setPaintProperty("congressional-districts-line", "line-width", 1.5);
+        }
+      }
+    };
+
+    m.on("zoom", handleZoomChange);
+
+    return () => {
+      m.off("zoom", handleZoomChange);
+    };
+  }, [selectedDistrictId, ready, map]);
 
   return (
     <div className="map-root">

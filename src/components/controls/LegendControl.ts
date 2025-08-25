@@ -4,6 +4,7 @@ import {
   FILL_OPACITY,
   PCT_COLOR,
   OREGON_TRAILS_COLOR,
+  CONGRESSIONAL_DISTRICTS_COLOR,
 } from "../../config";
 
 export class LegendControl implements mapboxgl.IControl {
@@ -39,6 +40,14 @@ export class LegendControl implements mapboxgl.IControl {
           </svg>
         </span>
         <span>Oregon Trails</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-swatch" aria-hidden="true">
+          <svg width="32" height="16" viewBox="0 0 32 16" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="28" height="12" fill="${CONGRESSIONAL_DISTRICTS_COLOR}" fill-opacity="0.1" stroke="${CONGRESSIONAL_DISTRICTS_COLOR}" stroke-width="1.5" />
+          </svg>
+        </span>
+        <span>Congressional Districts</span>
       </div>`;
     wrap.appendChild(card);
     this._container = wrap;
