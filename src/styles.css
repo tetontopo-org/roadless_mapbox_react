@@ -11,7 +11,7 @@ body {
 
 .map-root {
   position: relative;
-  height: 100vh;
+  height: 100%;
 }
 #map {
   position: absolute;
@@ -428,5 +428,84 @@ body {
   .sources-popup {
     min-width: 350px;
     max-width: 400px;
+  }
+
+  /* Hide Legend on mobile */
+  .mapboxgl-ctrl-group:has(.legend-card),
+  .mapboxgl-ctrl:has(.legend-card) {
+    display: none !important;
+  }
+
+  /* Move survey button to bottom-right when legend is hidden */
+  .survey-control {
+    bottom: 20px !important;
+  }
+}
+
+/* Add these responsive rules at the end of your CSS file */
+
+/* For smaller embedded views */
+@media (max-height: 600px) {
+  .map-title {
+    top: 8px;
+    left: 8px;
+    padding: 6px 10px;
+  }
+
+  .map-title__text {
+    font-size: 1rem;
+  }
+
+  .map-title__sub {
+    font-size: 0.8rem;
+  }
+
+  .survey-control {
+    bottom: 140px;
+  }
+
+  .survey-btn {
+    padding: 10px 14px;
+    font-size: 15px;
+    min-width: 150px;
+  }
+
+  /* Hide Legend on smaller embedded views */
+  .mapboxgl-ctrl-group:has(.legend-card),
+  .mapboxgl-ctrl:has(.legend-card) {
+    display: none !important;
+  }
+
+  /* Move survey button to bottom-right when legend is hidden */
+  .survey-control {
+    bottom: 20px !important;
+  }
+}
+
+/* For very small embedded views */
+@media (max-height: 400px) {
+  .map-title {
+    display: none; /* Hide title in very small embeds */
+  }
+
+  .survey-control {
+    bottom: 120px;
+  }
+
+  .survey-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+    min-width: 130px;
+  }
+
+  /* Hide Legend on very small embedded views */
+  .mapboxgl-ctrl-group:has(.legend-card),
+  .mapboxgl-ctrl:has(.legend-card) {
+    display: none !important;
+  }
+
+  /* Move survey button to bottom-right when legend is hidden */
+  .survey-control {
+    bottom: 20px !important;
   }
 }
