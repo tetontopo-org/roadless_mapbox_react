@@ -19,7 +19,7 @@ export function useMapbox(
       style,
       center,
       zoom,
-      pitch: 60, // Higher pitch for a stronger 3D perspective
+      pitch: 50, // Higher pitch for a stronger 3D perspective
       bearing: 0,
     });
 
