@@ -29,7 +29,7 @@ export const SearchControl: React.FC<SearchControlProps> = ({
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const searchTimeoutRef = useRef<number | null>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -118,7 +118,7 @@ export const SearchControl: React.FC<SearchControlProps> = ({
     try {
       // Use Mapbox Geocoding API with Oregon-focused search
       const params = new URLSearchParams({
-        access_token: mapboxgl.accessToken,
+        access_token: mapboxgl.accessToken || "",
         country: "US",
         types: "poi,place,address,neighborhood",
         limit: "8",
@@ -248,7 +248,7 @@ export const SearchControl: React.FC<SearchControlProps> = ({
           type="text"
           value={query}
           onChange={handleInputChange}
-          placeholder="Search places, addresses, rivers, mountains..."
+          placeholder="Search..."
           className="search-input"
           onFocus={() => {
             if (results.length > 0) setIsOpen(true);
