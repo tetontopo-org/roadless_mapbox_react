@@ -730,3 +730,153 @@ body {
     bottom: 20px !important;
   }
 }
+
+/* Flight Control Styles */
+.flight-control {
+  position: relative;
+  z-index: 3;
+}
+
+.flight-control-panel {
+  position: relative;
+}
+
+.flight-toggle-btn {
+  background: #fff;
+  color: #404040;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  font: 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  padding: 8px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.flight-toggle-btn:hover {
+  background: #f8f9fa;
+  border-color: #999;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.flight-toggle-btn:active {
+  background: #e9ecef;
+  transform: translateY(1px);
+}
+
+.flight-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.flight-controls {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  min-width: 280px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  z-index: 1000;
+  pointer-events: auto;
+}
+
+.flight-controls.active {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.flight-info {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.flight-status {
+  font: 14px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.status-text {
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.flight-speed {
+  font: 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  color: #6b7280;
+}
+
+.speed-value {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.flight-help {
+  padding: 12px 16px;
+}
+
+.help-title {
+  font: 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 8px;
+}
+
+.help-keys {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.help-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font: 11px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+}
+
+.key {
+  background: #f3f4f6;
+  color: #374151;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-family: 'Courier New', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.action {
+  color: #6b7280;
+  font-size: 10px;
+}
+
+/* Mobile adjustments for flight control */
+@media (max-width: 520px) {
+  .flight-controls {
+    min-width: 250px;
+  }
+  
+  .help-row {
+    font-size: 10px;
+  }
+  
+  .key {
+    font-size: 9px;
+    padding: 1px 4px;
+  }
+}

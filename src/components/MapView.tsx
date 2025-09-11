@@ -21,6 +21,7 @@ import { SurveyControl } from "./controls/SurveyControl";
 import { PitchControl } from "./controls/PitchControl";
 import { SourcesControl } from "./controls/SourcesControl";
 import { SearchControl } from "./controls/SearchControl";
+import { FlightControl } from "./controls/FlightControl";
 
 import MapTitle from "./MapTitle";
 
@@ -46,6 +47,7 @@ export default function MapView() {
     m.addControl(new PitchControl(), "top-right");
     m.addControl(new SurveyControl(), "bottom-right");
     m.addControl(new LegendControl(), "bottom-right");
+    m.addControl(new FlightControl(), "top-left"); // Add flight control
   }, [ready, map]);
 
   async function getGeoJSONBounds(
