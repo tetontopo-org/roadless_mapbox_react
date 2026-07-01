@@ -8,7 +8,7 @@ export class SurveyControl implements mapboxgl.IControl {
     container.className = "survey-control";
     const a = document.createElement("a");
     a.className = "survey-btn";
-    a.href = "https://act.sierraclub.org/actions/National?actionId=AR0569577";
+    a.href = "https://act.sierraclub.org/actions/National?actionId=AR0603784";
     a.target = "_blank";
     a.rel = "noopener noreferrer";
     a.textContent = "Take Action";
